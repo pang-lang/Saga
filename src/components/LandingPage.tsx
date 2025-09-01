@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GitBranch, FileText, MessageCircle, BarChart3, Zap, Clock, Star, Users, ArrowRight, Github, Sparkles, BookOpen, Target, Layers } from 'lucide-react';
+import { GitBranch, FileText, MessageCircle, BarChart3, Zap, Clock, Star, Users, ArrowRight, Github, Sparkles, BookOpen, Target, Layers, Menu, X, ChevronDown, ChevronUp, Plus, Minus } from 'lucide-react';
 import { motion } from "framer-motion"
 
 interface Repository {
@@ -16,8 +16,15 @@ interface LandingPageProps {
   onNavigateToWorkspace: (view: string, repoId?: string) => void;
 }
 
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps) {
   const [scrollY, setScrollY] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -64,6 +71,25 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
     }
   ];
 
+  const faqItems: FAQItem[] = [
+    {
+      question: "How does Saga generate documentation from my code?",
+      answer: "Saga uses advanced AI to analyze your codebase, including source code, comments, commit messages, and repository structure. It understands the context and relationships between different parts of your project to generate comprehensive, accurate documentation automatically."
+    },
+    {
+      question: "Which programming languages and frameworks does Saga support?",
+      answer: "Saga supports all major programming languages including JavaScript, TypeScript, Python, Go, Java, C#, Ruby, PHP, and more. It also understands popular frameworks like React, Vue, Django, Express, Spring, and many others."
+    },
+    {
+      question: "Can I customize the generated documentation?",
+      answer: "Absolutely! While Saga generates intelligent documentation automatically, you can customize templates, add your own sections, modify the structure, and include custom branding. The AI learns from your preferences to improve future generations."
+    },
+    {
+      question: "Is my code and data secure with Saga?",
+      answer: "Yes, security is our top priority. We use enterprise-grade encryption for all data in transit and at rest. Your code never leaves our secure infrastructure, and we offer on-premise deployment options for enterprise customers with strict security requirements."
+    },
+  ];
+
   const getLanguageColor = (language: string) => {
     const colors = {
       TypeScript: 'bg-blue-500',
@@ -96,9 +122,96 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
   const heroOpacity = Math.max(0, 1 - scrollY / 400);
   const heroTransform = `translateY(${scrollY * 0.5}px)`;
 
+  const toggleFAQ = (index: number) => {
+    setOpenFAQ(openFAQ === index ? null : index);
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      <div className="relative overflow-hidden">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-gray-900">Saga</span>
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Features
+              </a>
+              <a href="#pricing" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Pricing
+              </a>
+              <a href="#faq" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                FAQ
+              </a>
+              <a href="#contact" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Contact Us
+              </a>
+            </nav>
+
+            {/* Desktop CTA */}
+            <div className="hidden md:flex items-center space-x-4">
+              <button className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Sign In
+              </button>
+              <button className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-medium shadow-lg">
+                Get Started Free
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="md:hidden py-4 border-t border-gray-200"
+            >
+              <nav className="flex flex-col space-y-4">
+                <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium py-2">
+                  Features
+                </a>
+                <a href="#pricing" className="text-gray-600 hover:text-gray-900 font-medium py-2">
+                  Pricing
+                </a>
+                <a href="#faq" className="text-gray-600 hover:text-gray-900 font-medium py-2">
+                  FAQ
+                </a>
+                <a href="#contact" className="text-gray-600 hover:text-gray-900 font-medium py-2">
+                  Contact Us
+                </a>
+                <div className="flex flex-col space-y-2 pt-4">
+                  <button className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium text-left">
+                    Sign In
+                  </button>
+                  <button className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-medium shadow-lg">
+                    Get Started Free
+                  </button>
+                </div>
+              </nav>
+            </motion.div>
+          )}
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <div className="relative overflow-hidden pt-16">
         <motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
@@ -125,11 +238,6 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
           }}
         >
           <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <BookOpen className="w-8 h-8 text-white" />
-              </div>
-            </div>
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
               <span className="bg-gradient-to-r from-white to-gray-100 bg-clip-text text-transparent">
                 Saga
@@ -142,9 +250,9 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
               Transform your codebase into beautiful, intelligent documentation with AI-powered tools that understand your project
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <button className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-[0_0_20px_rgba(139,92,246,0.6)] transition-all duration-300">
-              Try for Free
-            </button>
+              <button className="flex items-center space-x-3 px-8 py-4 border-2 border-white/30 text-white rounded-xl font-semibold text-lg hover:border-white hover:bg-white/10 transition-all duration-200">
+                Try for Free
+              </button>
               <button className="flex items-center space-x-3 px-8 py-4 border-2 border-white/30 text-white rounded-xl font-semibold text-lg hover:border-white hover:bg-white/10 transition-all duration-200">
                 <Github className="w-5 h-5" />
                 <span>Connect GitHub Repo</span>
@@ -154,9 +262,8 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
         </div>
       </div>
 
-    
       {/* Features Section */}
-      <div className="py-20 bg-gray-50">
+      <div id="features" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => {
@@ -164,7 +271,7 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
               return (
                 <div
                   key={index}
-                  className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#92A6C8] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center mb-6">
                     <Icon className="w-6 h-6 text-indigo-600" />
@@ -188,7 +295,7 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
                 Connect your repositories and start generating intelligent documentation
               </p>
             </div>
-            <button className="px-6 py-3 bg-[#92A6C8] text-white rounded-xl hover:bg-[#5574AA] transition-colors flex items-center space-x-2 shadow-lg">
+            <button className="px-6 py-3 bg-[#92A6C8] text-white rounded-xl hover:bg-[#374A6D] transition-colors flex items-center space-x-2 shadow-lg">
               <Github className="w-5 h-5" />
               <span>Connect Repository</span>
             </button>
@@ -199,7 +306,7 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
               <div
                 key={repo.id}
                 onClick={() => onNavigateToWorkspace('write', repo.id)}
-                className="bg-white rounded-2xl border border-gray-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-1"
+                className="bg-white rounded-2xl border border-gray-200 hover:border-[#92A6C8] hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-1"
               >
                 {/* Repository Header */}
                 <div className="p-6">
@@ -278,8 +385,73 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
         </div>
       </div>
 
+      {/* FAQ Section */}
+      <div id="faq" className="py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Everything you need to know about Saga and how it can transform your documentation workflow
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="w-full px-6 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-lg font-semibold text-gray-900 pr-4">
+                    {item.question}
+                  </span>
+                  {openFAQ === index ? (
+                    <Minus className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                  ) : (
+                    <Plus className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  )}
+                </button>
+                
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: openFAQ === index ? 'auto' : 0,
+                    opacity: openFAQ === index ? 1 : 0
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-6 pb-6">
+                    <p className="text-gray-600 leading-relaxed">
+                      {item.answer}
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">
+              Still have questions? We're here to help!
+            </p>
+            <button className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-medium shadow-lg">
+              Contact Support
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Product Footer */}
-      <footer className="bg-gray-900 text-white">
+      <footer id="contact" className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
@@ -307,8 +479,8 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
             <div>
               <h3 className="text-lg font-semibold mb-4">Product</h3>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
+                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">API</a></li>
               </ul>
@@ -331,7 +503,7 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
               <ul className="space-y-3 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Contact</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
               </ul>
             </div>
