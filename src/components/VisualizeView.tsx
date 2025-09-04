@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { GitBranch, Activity, Layers, Download, Filter } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 export default function VisualizeView() {
   const [activeTab, setActiveTab] = useState('flow');
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: 'flow', label: 'Flow Diagrams', icon: GitBranch },
     { id: 'api', label: 'API Graphs', icon: Activity },
     { id: 'changelog', label: 'Changelogs', icon: Layers },
   ];
+
+  const handleExport = async () => {
+    if(!exportRef.current) return;
+
+    const canvas = await html2canvas(exportRef.current, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF('landscape', 'pt', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`visualization-${activeTab}.pdf`);
+  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -23,11 +40,14 @@ export default function VisualizeView() {
               <Filter className="w-4 h-4" />
               <span>Filter</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            <button onClick={handleExport} className="flex items-center space-x-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
               <Download className="w-4 h-4" />
               <span>Export</span>
             </button>
           </div>
+
+          {/* Content to export wrapped here */}
+          {/* <div ref={exportRef} className='flex-1 p-6 bg-white rounded-lg border border-gray-200'></div> */}
         </div>
 
         <div className="flex space-x-1 mt-6">
@@ -52,6 +72,7 @@ export default function VisualizeView() {
       </div>
 
       <div className="flex-1 p-6">
+        <div ref={exportRef}>
         {activeTab === 'flow' && (
           <div className="h-full bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-center h-full">
@@ -92,31 +113,47 @@ export default function VisualizeView() {
 
         {activeTab === 'api' && (
           <div className="h-full bg-white rounded-lg border border-gray-200 p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-6">
+            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full"> */}
+              <div className="w-full h-full bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">API Call Graph</h3>
                 <div className="space-y-3">
                   {[
-                    { endpoint: '/api/auth/login', calls: 1250, status: 'healthy' },
-                    { endpoint: '/api/users', calls: 890, status: 'healthy' },
-                    { endpoint: '/api/posts', calls: 2340, status: 'warning' },
-                    { endpoint: '/api/files/upload', calls: 567, status: 'error' },
-                  ].map((api, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          api.status === 'healthy' ? 'bg-emerald-500' :
-                          api.status === 'warning' ? 'bg-amber-500' : 'bg-red-500'
-                        }`} />
-                        <span className="font-mono text-sm">{api.endpoint}</span>
-                      </div>
-                      <span className="text-sm text-gray-600">{api.calls} calls</span>
+                    {
+                      endpoint: '/api/auth/login',
+                      function: 'Authenticates user credentials and returns a session token.',
+                      impact: 'Login page, user dashboard access, session initialization',
+                    },
+                    {
+                      endpoint: '/api/users',
+                      function: 'Fetches user profile data and user list for admin view.',
+                      impact: 'Profile page, admin user management',
+                    },
+                    {
+                      endpoint: '/api/posts',
+                      function: 'Retrieves and posts blog content to the system.',
+                      impact: 'Blog feed, post editor',
+                    },
+                    {
+                      endpoint: '/api/files/upload',
+                      function: 'Handles file uploads to the server (images/docs).',
+                      impact: 'Editor attachments, media library',
+                    },
+                  ]
+                  .map((api, index) => (
+                    <div key={index} className="p-4 border border-ray-200 rounded-lg shadow-sm">
+                      <h4 className='font-semibold text-indigo-700'>{api.endpoint}</h4>
+                      <p className='text-sm text-gray-800 mt-1'>
+                        <span className='font-medium text-gray-600'>Function: </span>{api.function}
+                      </p>
+                      <p className="text-sm text-gray-800 mt-1">
+                        <span className="font-medium text-gray-600">Impacted Areas: </span>{api.impact}
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6">
+              {/* <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Response Times</h3>
                 <div className="space-y-4">
                   {[
@@ -134,9 +171,9 @@ export default function VisualizeView() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
-          </div>
+          // </div>
         )}
 
         {activeTab === 'changelog' && (
@@ -179,6 +216,7 @@ export default function VisualizeView() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
