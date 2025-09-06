@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GitBranch, FileText, MessageCircle, BarChart3, Zap, Clock, Star, Users, ArrowRight, Github, Sparkles, BookOpen, Target, Layers, Menu, X, ChevronDown, ChevronUp, Plus, Minus } from 'lucide-react';
 import { motion } from "framer-motion"
+import FetchRepo from "./FetchRepo"; 
 
 interface Repository {
   id: string;
@@ -285,7 +286,106 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
         </div>
       </div>
 
-      {/* Repositories Section */}
+    {/* Repositories Section */}
+    <div className="py-20">
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Repositories</h2>
+        <p className="text-lg text-gray-600 mb-8">
+          Connect your repositories and start generating intelligent documentation
+        </p>
+
+        {/* Repo link input */}
+        <input
+          type="text"
+          placeholder="Paste GitHub repo link"
+          className="w-full max-w-2xl px-4 py-3 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6"
+          id="repoInput"
+        />
+
+        {/* Buttons row (centered below the bar) */}
+        <div className="flex justify-center space-x-4 mb-10">
+          {/* Fetch button */}
+          <button
+            onClick={() => {
+              const input = document.getElementById("repoInput") as HTMLInputElement;
+              if (input?.value) {
+                alert(`Fetching repo: ${input.value}`);
+                // later -> trigger FetchRepo API call
+              }
+            }}
+            className="px-6 py-3 bg-[#92A6C8] text-white rounded-xl hover:bg-[#374A6D] transition-colors flex items-center space-x-2 shadow-lg"
+          >
+            <Github className="w-5 h-5" />
+            <span>Fetch Repository</span>
+          </button>
+
+          {/* Refresh button */}
+          <button
+            onClick={() => {
+              alert("Refreshing repo status...");
+              // later -> re-fetch repo status from API
+            }}
+            className="px-6 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors flex items-center space-x-2 shadow-lg"
+          >
+            <span>🔄 Refresh</span>
+          </button>
+        </div>
+
+    {/* Repositories List */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {repositories.map((repo) => (
+        <div
+          key={repo.id}
+                onClick={() => onNavigateToWorkspace('write', repo.id)}
+                className="bg-white rounded-2xl border border-gray-200 hover:border-[#92A6C8] hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-1"
+              >
+                {/* Repository Header */}
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:from-indigo-100 group-hover:to-indigo-200 transition-all duration-300">
+                        <GitBranch className="w-6 h-6 text-gray-600 group-hover:text-indigo-600 transition-colors" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                          {repo.name}
+                        </h3>
+                        <p className="text-gray-600 mt-1">{repo.description}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-6 text-sm text-gray-500">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${getLanguageColor(repo.language)}`} />
+                      <span>{repo.language}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4" />
+                      <span>{repo.stars}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Users className="w-4 h-4" />
+                      <span>{repo.contributors}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{repo.lastUpdated}</span>
+                    </div>
+                  </div>
+
+                  {/* Hover indicator */}
+                  <div className="mt-4 flex items-center text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="text-sm font-medium">Click to open workspace</span>
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+
+            {/* Repositories Section */}
       <div className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-12">
@@ -352,6 +452,10 @@ export default function LandingPage({ onNavigateToWorkspace }: LandingPageProps)
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+
 
           {/* Recent Activity */}
           <div className="mt-16 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8">
