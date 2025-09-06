@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { GitBranch, Activity, Layers, Download, Filter } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -26,7 +26,7 @@ export default function VisualizeView() {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(`visualization-${activeTab}.pdf`);
   };
-
+  
   return (
     <div className="flex-1 flex flex-col">
       <div className="border-b border-gray-200 p-6">
@@ -45,9 +45,6 @@ export default function VisualizeView() {
               <span>Export</span>
             </button>
           </div>
-
-          {/* Content to export wrapped here */}
-          {/* <div ref={exportRef} className='flex-1 p-6 bg-white rounded-lg border border-gray-200'></div> */}
         </div>
 
         <div className="flex space-x-1 mt-6">
@@ -78,31 +75,63 @@ export default function VisualizeView() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
                 <div className="w-full max-w-2xl mx-auto">
-                  <svg viewBox="0 0 400 300" className="w-full h-64 mb-4">
-                    <defs>
-                      <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-                              refX="0" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#6366F1" />
-                      </marker>
-                    </defs>
-                    
-                    <rect x="50" y="50" width="80" height="40" rx="8" fill="#EEF2FF" stroke="#6366F1" strokeWidth="2" />
-                    <text x="90" y="75" textAnchor="middle" className="fill-indigo-700 text-sm font-medium">Start</text>
-                    
-                    <rect x="160" y="50" width="80" height="40" rx="8" fill="#F0FDF4" stroke="#10B981" strokeWidth="2" />
-                    <text x="200" y="75" textAnchor="middle" className="fill-emerald-700 text-sm font-medium">Process</text>
-                    
-                    <rect x="270" y="50" width="80" height="40" rx="8" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="2" />
-                    <text x="310" y="75" textAnchor="middle" className="fill-amber-700 text-sm font-medium">Output</text>
-                    
-                    <line x1="130" y1="70" x2="160" y2="70" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                    <line x1="240" y1="70" x2="270" y2="70" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                    
-                    <rect x="160" y="150" width="80" height="40" rx="8" fill="#FDF2F8" stroke="#EC4899" strokeWidth="2" />
-                    <text x="200" y="175" textAnchor="middle" className="fill-pink-700 text-sm font-medium">Decision</text>
-                    
-                    <line x1="200" y1="90" x2="200" y2="150" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                  </svg>
+                  <svg viewBox="0 0 700 500" className="w-full h-auto mb-4">
+                  <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="#6366F1" />
+                    </marker>
+                  </defs>
+
+                  {/* Terminal: Start */}
+                  <rect x="280" y="20" width="140" height="40" rx="20" ry="20" fill="#EEF2FF" stroke="#6366F1" strokeWidth="2" />
+                  <text x="350" y="45" textAnchor="middle" fill="#4F46E5" fontSize="14">Start</text>
+
+                  {/* Process: Click Login */}
+                  <rect x="280" y="90" width="140" height="40" rx="5" fill="#F0FDF4" stroke="#10B981" strokeWidth="2" />
+                  <text x="350" y="115" textAnchor="middle" fill="#065F46" fontSize="14">Click Login</text>
+
+                  {/* Process: Enter Credentials */}
+                  <rect x="280" y="160" width="140" height="40" rx="5" fill="#F0FDF4" stroke="#10B981" strokeWidth="2" />
+                  <text x="350" y="185" textAnchor="middle" fill="#065F46" fontSize="14">Enter Credentials</text>
+
+                  {/* Decision: Valid? */}
+                  <polygon points="350,240 390,280 350,320 310,280" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="2" />
+                  <text x="350" y="285" textAnchor="middle" fill="#92400E" fontSize="13">Valid?</text>
+
+                  {/* Label for Yes */}
+                  <text x="400" y="270" fontSize="12" fill="#4B5563">Yes</text>
+                  {/* Label for No */}
+                  <text x="280" y="270" fontSize="12" fill="#4B5563">No</text>
+
+                  {/* Process: Redirect to Dashboard */}
+                  <rect x="510" y="260" width="160" height="40" rx="5" fill="#E0F2FE" stroke="#3B82F6" strokeWidth="2" />
+                  <text x="590" y="285" textAnchor="middle" fill="#1D4ED8" fontSize="13">Redirect to Dashboard</text>
+
+                  {/* Process: Show Error Message */}
+                  <rect x="30" y="260" width="160" height="40" rx="5" fill="#FDF2F8" stroke="#EC4899" strokeWidth="2" />
+                  <text x="110" y="285" textAnchor="middle" fill="#BE185D" fontSize="13">Show Error Message</text>
+
+                  {/* Terminal: End */}
+                  <rect x="280" y="420" width="140" height="40" rx="20" ry="20" fill="#EEF2FF" stroke="#6366F1" strokeWidth="2" />
+                  <text x="350" y="445" textAnchor="middle" fill="#4F46E5" fontSize="14">End</text>
+
+                  {/* Flowlines */}
+                  <line x1="350" y1="60" x2="350" y2="90" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                  <line x1="350" y1="130" x2="350" y2="160" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                  <line x1="350" y1="200" x2="350" y2="240" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
+
+                  {/* From Decision to Dashboard (Yes) */}
+                  <line x1="390" y1="280" x2="510" y2="280" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
+
+                  {/* From Decision to Error (No) */}
+                  <line x1="310" y1="280" x2="190" y2="280" stroke="#6366F1" strokeWidth="2" markerEnd="url(#arrowhead)" />
+
+                  {/* Folded Arrow from Dashboard to End */}
+                  <path d="M590,300 L590,360 L350,360 L350,420" stroke="#6366F1" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" />
+
+                  {/* Folded Arrow from Error to End */}
+                  <path d="M110,300 L110,360 L350,360 L350,420" stroke="#6366F1" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" />
+                </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Documentation Flow Diagram</h3>
                 <p className="text-gray-600">Visual representation of your documentation structure and user journey</p>
