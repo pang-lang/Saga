@@ -19,11 +19,17 @@ export default function VisualizeView() {
     const canvas = await html2canvas(exportRef.current, { scale: 2 });
     const imgData = canvas.toDataURL('image/png');
 
-    const pdf = new jsPDF('landscape', 'pt', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    
+    const pdf = new jsPDF({
+      orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [imgWidth, imgHeight],
+    });
+
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
     pdf.save(`visualization-${activeTab}.pdf`);
   };
   
@@ -36,10 +42,6 @@ export default function VisualizeView() {
             <p className="text-gray-600">Interactive diagrams and visual representations of your documentation</p>
           </div>
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              <Filter className="w-4 h-4" />
-              <span>Filter</span>
-            </button>
             <button onClick={handleExport} className="flex items-center space-x-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
               <Download className="w-4 h-4" />
               <span>Export</span>
